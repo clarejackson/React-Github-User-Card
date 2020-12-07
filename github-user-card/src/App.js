@@ -84,10 +84,6 @@ class App extends React.Component {
         {this.state.followers.map(follower => {
           return <p>{follower.login}</p>
         })}
-        {/* {console.log(this.state)}
-        {this.state.followers.map((follower) => {
-         return <p>{follower.login}</p>
-        })} */}
       </div>
     )
   }
