@@ -7,19 +7,16 @@ class App extends React.Component {
     super();
     this.state = {
       user: '',
-      followers: []
+      followers:[]
     }
   }
 
-  // handleChanges = e => {
-  //   this.setState({
-  //     ...this.state,
-  //     user: e.target.value
-  //   })
-  // }
-
-  // fetchUsers = () => {
-    
+  handleChanges = e => {
+    this.setState({
+      ...this.state,
+      user: e.target.value
+    })
+  }
 
   componentDidMount() {
     axios.get('https://api.github.com/users/clarejackson')
@@ -27,7 +24,7 @@ class App extends React.Component {
       console.log(res);
       this.setState({
         ...this.state,
-        user: res.data.name
+        user: res.data.login
       })
     })
     .catch(err => console.log(err));
@@ -42,14 +39,55 @@ class App extends React.Component {
     })
     .catch(res => console.log(res))
   }
+
+  fetchUsers = () => {
+    axios.get(`https://api.github.com/users/${this.state.user}`)
+    .then(res => {
+      this.setState({
+        ...this.state,
+        user: res.data.login
+      })
+    })
+    .catch(res => console.log(res))
+
+    axios.get(`https://api.github.com/users/${this.state.user}/followers`)
+    .then(res => {
+      console.log(typeof res.data)
+      this.setState({
+        ...this.state,
+        followers: res.data
+      })
+    })
+    .catch(res => console.log(res))
+    .finally(() => this.setState({user: ''}))
+  }
   
 
-
-
+  componentDidUpdate(prevProps, prevState) {
+    if (prevState.user !== this.state.user) {
+      console.log('user has changed')
+    }
+  }
+  
   render() {
     return (
       <div>
         <h1>Github User Card</h1>
+        <input
+        placeholder='username'
+        value={this.state.user}
+        type='text'
+        onChange={this.handleChanges}
+        />
+        <button onClick={this.fetchUsers}>Submit Username</button>
+        <p>{this.state.user}</p>
+        {this.state.followers.map(follower => {
+          return <p>{follower.login}</p>
+        })}
+        {/* {console.log(this.state)}
+        {this.state.followers.map((follower) => {
+         return <p>{follower.login}</p>
+        })} */}
       </div>
     )
   }
